@@ -1,0 +1,17 @@
+{
+    "contents" : "makeDict <- function(keys,values){\n  dict <- list()\n  if (class(keys)=='factor') { keys <- as.character(keys) }\n  if (class(values)=='factor') { values <- as.character(values) }\n  for (i in seq(1:length(keys))) {\n    dict[[ keys[i] ]] <- values[i]\n  }\n  return(dict)\n}\n\nd <- read.csv('Animal Similarity Comparison-export-Thu Jun 26 16-27-40 CDT 2014.csv')\n\nS <- \n\n\n<- read.csv('discovery animals 2.csv',header=FALSE)\n\nlabel2ind <- makeDict(keys=temp$V2, values=temp$V1)\nind2label <- makeDict(keys=temp$V1, values=temp$V2)\ntemp <- do.call(c,ind2label)\ntemp[d$target]\n\nids <- unique(cbind(d$targetId,d$target))\nix <- order(ids[,2])\nids <- ids[ix,]\n\nlapply(d$target,)\n",
+    "created" : 1404140766904.000,
+    "dirty" : true,
+    "encoding" : "UTF-8",
+    "folds" : "",
+    "hash" : "119201112",
+    "id" : "AFEC0068",
+    "lastKnownWriteTime" : 1404144065,
+    "path" : "~/PREP/animals/main.R",
+    "project_path" : "main.R",
+    "properties" : {
+        "tempName" : "Untitled1"
+    },
+    "source_on_save" : false,
+    "type" : "r_source"
+}
