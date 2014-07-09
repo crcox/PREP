@@ -4,6 +4,7 @@ import os
 import csv
 from numpy import *
 from numpy.random import *
+import scipy.spatial
 
 norm = linalg.norm
 floor = math.floor
@@ -11,7 +12,7 @@ ceil = math.ceil
 
 default_dir = '/'
 
-def update_embedding(S,X,start_iter=0,end_iter=nan):
+def update_embedding(S,X,CV,start_iter=0,end_iter=nan):
     
     n = X.shape[0]
     d = X.shape[1]
@@ -36,10 +37,10 @@ def update_embedding(S,X,start_iter=0,end_iter=nan):
         eta = float(sqrt(100))/sqrt(iter+100)
         
         X = X - eta*G
-        break
         if iter % m == 0:
-            
-#            print "epoch = "+str(iter/m)+"   emp_loss = "+str(avg_emp_loss/count)+"   hinge_loss = "+str(avg_hinge_loss/count)+"    norm(X)/sqrt(n) = "+str(norm(X)/sqrt(n))
+            MDS = X/norm(X)*sqrt(n)
+            print test_cv(MDS,CV)   
+            print "epoch = "+str(iter/m)+"   emp_loss = "+str(avg_emp_loss/count)+"   hinge_loss = "+str(avg_hinge_loss/count)+"    norm(X)/sqrt(n) = "+str(norm(X)/sqrt(n))
             avg_emp_loss = 0
             avg_hinge_loss = 0
             count = 0
@@ -61,16 +62,10 @@ def get_gradient(X,S):
     H = mat([[1.,0.,-1.],[ 0.,  -1.,  1.],[ -1.,  1.,  0.]])
     
     G = zeros((n,d))
-    print "I am here"
-    print "S", S
     for q in S:
-        print "And here"
-        print "q",q
         loss_ijk = trace(dot(H,dot(X[q,:],X[q,:].T)))
         if loss_ijk+1.>0.:
             hinge_loss = hinge_loss + loss_ijk + 1.
-            print H*X[q,:]/m
-            print dot(H,X[q,:])
             G[q,:] = G[q,:] + H*X[q,:]/m
             
             if loss_ijk > 0:
@@ -81,3 +76,15 @@ def get_gradient(X,S):
     hinge_loss = hinge_loss/m
     
     return G, emp_loss, hinge_loss
+    
+def test_cv(MDS,CV):
+    n = len(CV)
+    cv_err = 0
+    for i in xrange(n):
+        xy = [MDS[j] for j in CV[i]]
+        d = scipy.spatial.distance.pdist(xy)
+        
+        if (d[0] < d[1]):
+            cv_err = cv_err + 1
+    return(cv_err/float(n))
+    
